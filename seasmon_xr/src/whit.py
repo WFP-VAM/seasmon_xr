@@ -193,8 +193,8 @@ def ws2doptv(y, nodata, llas, out, lopt):
 
         # Compute v-curve
         for lix in range(nl):
-            l = pow(10, llas[lix])
-            z[:] = ws2d(y, l, w)
+            lmda = pow(10, llas[lix])
+            z[:] = ws2d(y, lmda, w)
             for i in range(m):
                 w_tmp = w[i]
                 y_tmp = y[i]
@@ -285,7 +285,7 @@ def ws2doptvp(y, nodata, p, llas, out, lopt):
 
         # Compute v-curve
         for lix in range(nl):
-            l = pow(10, llas[lix])
+            lmda = pow(10, llas[lix])
 
             for i in range(10):
                 for j in range(m):
@@ -297,7 +297,7 @@ def ws2doptvp(y, nodata, p, llas, out, lopt):
                         wa[j] = p1
                     ww[j] = w[j] * wa[j]
 
-                znew[:] = ws2d(y, l, ww)
+                znew[:] = ws2d(y, lmda, ww)
                 z_tmp = 0.0
                 j = 0
                 for j in range(m):
@@ -433,7 +433,7 @@ def ws2doptvplc(y, nodata, p, lc, out, lopt):
 
         # Compute v-curve
         for lix in range(nl):
-            l = pow(10, llas[lix])
+            lmda = pow(10, llas[lix])
 
             for i in range(10):
                 for j in range(m):
@@ -445,7 +445,7 @@ def ws2doptvplc(y, nodata, p, lc, out, lopt):
                         wa[j] = p1
                     ww[j] = w[j] * wa[j]
 
-                znew[:] = ws2d(y, l, ww)
+                znew[:] = ws2d(y, lmda, ww)
                 z_tmp = 0.0
                 j = 0
                 for j in range(m):
@@ -710,8 +710,8 @@ def autocorr(x):
                 sum1 += data1[i]
                 sum2 += data2[i]
 
-                mean1 = sum1 / M
-                mean2 = sum2 / M
+            mean1 = sum1 / M
+            mean2 = sum2 / M
 
             var_sum1 = 0.0
             var_sum2 = 0.0
