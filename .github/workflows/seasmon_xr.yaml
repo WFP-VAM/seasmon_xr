@@ -1,20 +1,16 @@
 name: Build and test seasmon_xr
 on:
   push:
-    branches:
-      - main
   pull_request:
-    branches:
-      - main
 jobs:
   build_and_test:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     defaults:
       run:
         working-directory: ./
     strategy:
       matrix:
-        python-version: [3.7, 3.8, 3.9]
+        python-version: [3.8, 3.9]
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python ${{ matrix.python-version }}
@@ -25,8 +21,8 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ${{ env.pythonLocation }}
-          key: ${{ env.pythonLocation }}-${{ hashFiles('requirements.txt') }}
+          key: ${{ env.pythonLocation }}-${{ hashFiles('requirements.txt', 'requirements_dev.txt') }}
       - name: install dependencies
         run: pip install --upgrade --upgrade-strategy eager -r requirements_dev.txt -r requirements.txt
       - name: run pytest
-        run: python -m pytest
+        run: python -m pytest -s

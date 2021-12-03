@@ -2,3 +2,8 @@
 #flake8
 pytest
 pytest-runner
+pytest-cov
+black
+pylint
+pydocstyle
+isort
