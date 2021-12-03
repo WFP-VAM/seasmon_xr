@@ -1,5 +1,7 @@
-from numba import guvectorize, float64, int16
+"""Whittaker smoother with asymmetric smoothing and fixed lambda (S)."""
 import numpy
+from numba import guvectorize
+from numba.core.types import float64, int16
 
 from ._helper import lazycompile
 from .ws2d import ws2d
@@ -13,7 +15,9 @@ from .ws2d import ws2d
     )
 )
 def ws2dpgu(y, lmda, nodata, p, out):
-    """Whittaker smoother with asymmetric smoothing and fixed lambda (S).
+    """
+    Whittaker smoother with asymmetric smoothing and fixed lambda (S).
+
     Args:
         y: time-series numpy array
         l: smoothing parameter lambda (S)
@@ -22,10 +26,9 @@ def ws2dpgu(y, lmda, nodata, p, out):
     Returns:
         Smoothed time-series array z
     """
-
     if lmda != 0.0:
 
-        w = numpy.zeros(y.shape, dtype=float64)
+        w = numpy.zeros(y.shape, dtype=float64)  # type: ignore
         m = y.shape[0]
         n = 0
 

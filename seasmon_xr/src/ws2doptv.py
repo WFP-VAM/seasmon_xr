@@ -1,3 +1,4 @@
+"""Whittaker filter V-curve optimization os S."""
 from math import log, sqrt
 
 import numpy
@@ -16,13 +17,14 @@ from .ws2d import ws2d
     )
 )
 def ws2doptv(y, nodata, llas, out, lopt):
-    """Whittaker filter V-curve optimization of S
+    """
+    Whittaker filter V-curve optimization of S.
 
     Args:
         y (numpy.array): raw data array (1d, expected in float64)
         nodata (double, int): nodata value
-        llas (numpy.array): 1d array of s values to use for optimization"""
-
+        llas (numpy.array): 1d array of s values to use for optimization
+    """
     m = y.shape[0]
     w = numpy.zeros(y.shape)
     n = 0

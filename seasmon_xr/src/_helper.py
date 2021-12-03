@@ -2,6 +2,8 @@ from functools import wraps
 
 
 def lazycompile(internal_decorator):
+    """Delay wrapper."""
+
     def _lazycompile(f):
         inner_decorated = None
 

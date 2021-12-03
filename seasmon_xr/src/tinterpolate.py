@@ -1,4 +1,6 @@
-from numba import guvectorize, float64, int16, int32, uint8
+"""Interpolation numba functions."""
+from numba import guvectorize
+from numba.core.types import float64, int16, int32, uint8
 
 from ._helper import lazycompile
 from .ws2d import ws2d
@@ -12,7 +14,8 @@ from .ws2d import ws2d
     )
 )
 def tinterpolate(x, template, labels, template_out, out):  # pylint: disable=W0613
-    """Temporal interpolation of smoothed data
+    """
+    Temporal interpolation of smoothed data.
 
     Args:
         x: smoothed data
@@ -20,7 +23,6 @@ def tinterpolate(x, template, labels, template_out, out):  # pylint: disable=W06
         labels: array of labels for grouping of length equal to template
         template_out: helper array to determine the length of output array
     """
-
     temp = template.copy()
     w = template.copy()
     ii = 0

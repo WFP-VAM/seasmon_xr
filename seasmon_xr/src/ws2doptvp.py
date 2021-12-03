@@ -1,3 +1,4 @@
+"""Whittaker filter V-curve optimization of S and asymmetric weights."""
 # pyright: reportGeneralTypeIssues=false
 from math import log, sqrt
 
@@ -17,14 +18,15 @@ from .ws2d import ws2d
     )
 )
 def ws2doptvp(y, nodata, p, llas, out, lopt):
-    """Whittaker filter V-curve optimization of S and asymmetric weights
+    """
+    Whittaker filter V-curve optimization of S and asymmetric weights.
 
     Args:
         y (numpy.array): raw data array (1d, expected in float64)
         nodata (double, int): nodata value
         p (float): Envelope value for asymmetric weights
-        llas (numpy.array): 1d array of s values to use for optimization"""
-
+        llas (numpy.array): 1d array of s values to use for optimization
+    """
     m = y.shape[0]
     w = numpy.zeros(y.shape, dtype=float64)
 
@@ -152,14 +154,15 @@ def ws2doptvp(y, nodata, p, llas, out, lopt):
 
 @jit(nopython=True)
 def _ws2doptvp(y, w, p, llas):
-    """Whittaker filter V-curve optimization of S and asymmetric weights
+    """
+    Whittaker filter V-curve optimization of S and asymmetric weights.
 
     Args:
         y (numpy.array): raw data array (1d, expected in float64)
         w (numpy.array): weights same size as y
         p (float): Envelope value for asymmetric weights
-        llas (numpy.array): 1d array of s values to use for optimization"""
-
+        llas (numpy.array): 1d array of s values to use for optimization
+    """
     m = y.shape[0]
 
     m1 = m - 1

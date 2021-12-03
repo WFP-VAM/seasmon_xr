@@ -1,3 +1,4 @@
+"""Lag-1 autocorrelations."""
 from numba import njit
 from numba.core.types import float64, int64
 from numpy import isnan, zeros
@@ -173,6 +174,7 @@ def autocorr_1d_int(data, nodata):
 
 @njit
 def autocorr_1d(data, nodata=None):
+    """Calculate Lag-1 autocorrelation on 1-d inputs."""
     result = float64(0)
     if nodata is None:
         result = autocorr_1d_float(data)
@@ -183,7 +185,9 @@ def autocorr_1d(data, nodata=None):
 
 @lazycompile(njit)
 def autocorr(x, nodata=None):
-    """Calculates Lag-1 autocorrelation.
+    """
+    Calculate Lag-1 autocorrelation.
+
     Args:
         x: 3d data array (Y,X,T)
     Returns:
@@ -202,7 +206,8 @@ def autocorr(x, nodata=None):
 
 @lazycompile(njit)
 def autocorr_tyx(tyx, nodata=None):
-    """Calculates Lag-1 autocorrelation.
+    """
+    Calculate Lag-1 autocorrelation.
 
     Args:
         tyx: 3d data array in T,Y,X order

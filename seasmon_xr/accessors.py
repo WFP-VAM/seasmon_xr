@@ -1,3 +1,4 @@
+"""Xarray Accesor classes."""
 from typing import Union
 
 import dask.array as da
@@ -18,7 +19,7 @@ __all__ = [
 
 
 class AccessorBase:
-    """Base class for accessors"""
+    """Base class for accessors."""
 
     def __init__(self, xarray_obj):
         self._obj = xarray_obj
@@ -26,13 +27,15 @@ class AccessorBase:
 
 @xarray.register_dataarray_accessor("labeler")
 class LabelMaker:
-    """Class to extending xarray.Dataarray for 'time'
+    """
+    Class to extending xarray.Dataarray for 'time'.
 
     Adds the properties labelling the time values as either
     dekads or pentads.
     """
 
     def __init__(self, xarray_obj):
+        """Construct with DataArray|Dataset."""
         if not np.issubdtype(xarray_obj, np.datetime64):
             raise TypeError(
                 "'.labeler' accessor only available for "
@@ -48,7 +51,7 @@ class LabelMaker:
 
     @property
     def dekad(self):
-        """Time values labeled as dekads"""
+        """Time values labeled as dekads."""
         return (
             self._obj.time.to_series()
             .apply(
@@ -60,7 +63,7 @@ class LabelMaker:
 
     @property
     def pentad(self):
-        """Time values labeled as pentads"""
+        """Time values labeled as pentads."""
         return (
             self._obj.time.to_series()
             .apply(
@@ -78,7 +81,7 @@ class LabelMaker:
 @xarray.register_dataset_accessor("iteragg")
 @xarray.register_dataarray_accessor("iteragg")
 class IterativeAggregation(AccessorBase):
-    """Class to aggregate multiple coordinate slices"""
+    """Class to aggregate multiple coordinate slices."""
 
     def sum(
         self,
@@ -88,8 +91,7 @@ class IterativeAggregation(AccessorBase):
         end: Union[str, int, float] = None,
         method: str = None,
     ):
-        """Generate sum-aggregations over dim for periods n"""
-
+        """Generate sum-aggregations over dim for periods n."""
         yield from self._iteragg(np.nansum, n, dim, begin, end, method)
 
     def mean(
@@ -100,8 +102,7 @@ class IterativeAggregation(AccessorBase):
         end: Union[str, int, float] = None,
         method: str = None,
     ):
-        """Generate mean-aggregations over dim for slices of n"""
-
+        """Generate mean-aggregations over dim for slices of n."""
         yield from self._iteragg(np.nanmean, n, dim, begin, end, method)
 
     def full(
@@ -112,8 +113,7 @@ class IterativeAggregation(AccessorBase):
         end: Union[str, int, float] = None,
         method: str = None,
     ):
-        """Generate mean-aggregations over dim for slices of n"""
-
+        """Generate mean-aggregations over dim for slices of n."""
         yield from self._iteragg(None, n, dim, begin, end, method)
 
     def _iteragg(self, func, n, dim, begin, end, method):
@@ -132,7 +132,7 @@ class IterativeAggregation(AccessorBase):
                 begin_ix = _index.get_loc(begin, method=method) + 1
             except KeyError:
                 raise ValueError(
-                    "Value %s for 'begin' not found in index for dim %s" % (begin, dim)
+                    f"Value {begin} for 'begin' not found in index for dim {dim}"
                 ) from None
         else:
             begin_ix = self._obj.sizes[dim]
@@ -142,7 +142,7 @@ class IterativeAggregation(AccessorBase):
                 end_ix = _index.get_loc(end, method=method)
             except KeyError:
                 raise ValueError(
-                    "Value %s for 'end' not found in index for dim %s" % (end, dim)
+                    f"Value {end} for 'end' not found in index for dim {dim}"
                 ) from None
         else:
             end_ix = 0
@@ -172,24 +172,24 @@ class IterativeAggregation(AccessorBase):
 @xarray.register_dataset_accessor("anom")
 @xarray.register_dataarray_accessor("anom")
 class Anomalies(AccessorBase):
-    """Class to calculate anomalies from reference"""
+    """Class to calculate anomalies from reference."""
 
     def ratio(self, reference, offset=0):
-        """Calculate anomaly as ratio"""
+        """Calculate anomaly as ratio."""
         return (self._obj + offset) / (reference + offset) * 100
 
     def diff(self, reference, offset=0):
-        """Calculate anomaly as difference"""
+        """Calculate anomaly as difference."""
         return (self._obj + offset) - (reference + offset)
 
 
 @xarray.register_dataset_accessor("whit")
 @xarray.register_dataarray_accessor("whit")
 class WhittakerSmoother:
-    """Class for applying different version of the Whittaker smoother to a
-    Dataset or DataArray"""
+    """Class for applying different version of the Whittaker smoother."""
 
     def __init__(self, xarray_obj):
+        """Construct with DataArray|Dataset."""
         if "time" not in xarray_obj.dims:
             raise ValueError(
                 "'.whit' can only be applied to datasets / dataarrays "
@@ -204,8 +204,8 @@ class WhittakerSmoother:
         s: float = None,
         p: float = None,
     ) -> xarray.Dataset:
-
-        """Apply whittaker with fixed S
+        """
+        Apply whittaker with fixed S.
 
         Fixed S can be either provided as constant or
         as sgrid with a constant per pixel
@@ -218,8 +218,8 @@ class WhittakerSmoother:
             p: Envelope value for asymmetric weights
 
         Returns:
-            ds_out: xarray.Dataset with smoothed data"""
-
+            ds_out: xarray.Dataset with smoothed data
+        """
         if sg is None and s is None:
             raise ValueError("Need S or sgrid")
 
@@ -261,7 +261,8 @@ class WhittakerSmoother:
         srange: np.ndarray = None,
         p: float = None,
     ) -> xarray.Dataset:
-        """Apply whittaker with V-curve optimization of S
+        """
+        Apply whittaker with V-curve optimization of S.
 
         Args:
             dim: dimension to use for filtering
@@ -273,7 +274,6 @@ class WhittakerSmoother:
         Returns:
             ds_out: xarray.Dataset with smoothed data and sgrid
         """
-
         if lc is not None:
             if p is None:
                 raise ValueError(
@@ -329,7 +329,7 @@ class WhittakerSmoother:
         return ds_out
 
     def whitint(self, labels_daily: np.ndarray, template: np.ndarray):
-        """Wrapper for temporal interpolation using the Whittaker filter"""
+        """Compute temporal interpolation using the Whittaker filter."""
         if self._obj.dtype != "int16":
             raise NotImplementedError(
                 "Temporal interpolation works currently only with int16 input!"
@@ -357,9 +357,10 @@ class WhittakerSmoother:
 @xarray.register_dataset_accessor("algo")
 @xarray.register_dataarray_accessor("algo")
 class PixelAlgorithms:
-    """Set of algorithms to be applied to pixel timeseries"""
+    """Set of algorithms to be applied to pixel timeseries."""
 
     def __init__(self, xarray_obj):
+        """Construct with DataArray|Dataset."""
         if "time" not in xarray_obj.dims:
             raise ValueError(
                 "'.algo' can only be applied to datasets / dataarrays "
@@ -372,8 +373,7 @@ class PixelAlgorithms:
         calibration_start=None,
         calibration_stop=None,
     ):
-        """Calculates the SPI along the time dimension"""
-
+        """Calculate the SPI along the time dimension."""
         tix = self._obj.get_index("time")
 
         calstart_ix = 0
@@ -425,7 +425,7 @@ class PixelAlgorithms:
         return res
 
     def croo(self):
-        """Current run of ones along time dimension"""
+        """Compute current run of ones along time dimension."""
         xsort = self._obj.sortby("time", ascending=False)
         xtemp = xsort.where(xsort == 1).cumsum("time", skipna=False)
         xtemp = xtemp.where(~xtemp.isnull(), 0).argmax("time")
@@ -434,8 +434,7 @@ class PixelAlgorithms:
         return x_crbt
 
     def lroo(self):
-        """Longest run of ones along time dimension"""
-
+        """Longest run of ones along time dimension."""
         return xarray.apply_ufunc(
             seasmon_xr.src.lroo,
             self._obj,
@@ -445,7 +444,8 @@ class PixelAlgorithms:
         )
 
     def autocorr(self):
-        """Calculates the autocorrelation along time
+        """
+        Calculate the autocorrelation along time.
 
         Returns:
             xarray.DataArray with lag1 autocorrelation

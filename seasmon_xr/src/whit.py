@@ -1,24 +1,27 @@
-"""Numba accelerated Whittaker functions"""
+"""Numba accelerated Whittaker functions."""
+# pyright: reportGeneralTypeIssues=false
 # pylint: disable=C0103,C0301,E0401,R0912,R0913,R0914,R0915
 from math import log, pow, sqrt  # pylint: disable=W0622
 from typing import Union
 
-from numba import float64, int32, int16, uint8, guvectorize, jit
 import numpy
 import xarray
+from numba import guvectorize, njit
+from numba.core.types import float64, int16, int32, uint8
 
 
-@jit(nopython=True)
+@njit
 def ws2d(y, lmda, w):
-    """Whittaker filter with differences of 2nd order
+    """
+    Whittaker filter with differences of 2nd order.
 
     Args:
         y (numpy.array): raw data array (1d, expected in float64)
         lmda (double): S value
         w (numpy.array): weights vector (1d, expected in float64)
     Returns:
-        z (numpy.array): smoothed data array (1d)"""
-
+        z (numpy.array): smoothed data array (1d)
+    """
     n = y.shape[0]
     m = n - 1
     z = numpy.zeros(n)
@@ -61,7 +64,9 @@ def ws2d(y, lmda, w):
     [(float64[:], float64, float64, int16[:])], "(n),(),() -> (n)", nopython=True
 )
 def ws2dgu(y, lmda, nodata, out):
-    """Whittaker smoother with fixed lambda (S).
+    """
+    Whittaker smoother with fixed lambda (S).
+
     Args:
         y: time-series numpy array
         l: smoothing parameter lambda (S)
@@ -70,7 +75,6 @@ def ws2dgu(y, lmda, nodata, out):
     Returns:
         Smoothed time-series array z
     """
-
     m = y.shape[0]
     w = numpy.zeros(y.shape, dtype=float64)
 
@@ -95,7 +99,9 @@ def ws2dgu(y, lmda, nodata, out):
     nopython=True,
 )
 def ws2dpgu(y, lmda, nodata, p, out):
-    """Whittaker smoother with asymmetric smoothing and fixed lambda (S).
+    """
+    Whittaker smoother with asymmetric smoothing and fixed lambda (S).
+
     Args:
         y: time-series numpy array
         l: smoothing parameter lambda (S)
@@ -104,7 +110,6 @@ def ws2dpgu(y, lmda, nodata, p, out):
     Returns:
         Smoothed time-series array z
     """
-
     w = numpy.zeros(y.shape, dtype=float64)
     m = y.shape[0]
     n = 0
@@ -160,13 +165,14 @@ def ws2dpgu(y, lmda, nodata, p, out):
     nopython=True,
 )
 def ws2doptv(y, nodata, llas, out, lopt):
-    """Whittaker filter V-curve optimization of S
+    """
+    Whittaker filter V-curve optimization of S.
 
     Args:
         y (numpy.array): raw data array (1d, expected in float64)
         nodata (double, int): nodata value
-        llas (numpy.array): 1d array of s values to use for optimization"""
-
+        llas (numpy.array): 1d array of s values to use for optimization
+    """
     m = y.shape[0]
     w = numpy.zeros(y.shape, dtype=float64)
     n = 0
@@ -245,14 +251,15 @@ def ws2doptv(y, nodata, llas, out, lopt):
     nopython=True,
 )
 def ws2doptvp(y, nodata, p, llas, out, lopt):
-    """Whittaker filter V-curve optimization of S and asymmetric weights
+    """
+    Whittaker filter V-curve optimization of S and asymmetric weights.
 
     Args:
         y (numpy.array): raw data array (1d, expected in float64)
         nodata (double, int): nodata value
         p (float): Envelope value for asymmetric weights
-        llas (numpy.array): 1d array of s values to use for optimization"""
-
+        llas (numpy.array): 1d array of s values to use for optimization
+    """
     m = y.shape[0]
     w = numpy.zeros(y.shape, dtype=float64)
 
@@ -384,15 +391,18 @@ def ws2doptvp(y, nodata, p, llas, out, lopt):
     nopython=True,
 )
 def ws2doptvplc(y, nodata, p, lc, out, lopt):
-    """Whittaker filter V-curve optimization of S, asymmetric weights and
-    srange determined by autocorrelation
+    """
+    Whittaker filter V-curve optimization.
+
+    Whittaker filter V-curve optimization of S, asymmetric weights and
+    srange determined by autocorrelation.
 
     Args:
         y (numpy.array): raw data array (1d, expected in float64)
         nodata (double, int): nodata value
         p (float): Envelope value for asymmetric weights
-        lc (float): lag1 autocorrelation"""
-
+        lc (float): lag1 autocorrelation
+    """
     m = y.shape[0]
     w = numpy.zeros(y.shape, dtype=float64)
 
@@ -534,7 +544,8 @@ def whits(
     s: float = None,
     p: float = None,
 ) -> xarray.Dataset:
-    """Apply whittaker with fixed S
+    """
+    Apply whittaker with fixed S.
 
     Fixed S can be either provided as constant or
     as sgrid with a constant per pixel
@@ -548,8 +559,8 @@ def whits(
         p: Envelope value for asymmetric weights
 
     Returns:
-        ds_out: xarray.Dataset with smoothed data"""
-
+        ds_out: xarray.Dataset with smoothed data
+    """
     if sg is None and s is None:
         raise ValueError("Need S or sgrid")
 
@@ -593,7 +604,8 @@ def whitsvc(
     srange: numpy.ndarray = None,
     p: float = None,
 ) -> xarray.Dataset:
-    """Apply whittaker with V-curve optimization of S
+    """
+    Apply whittaker with V-curve optimization of S.
 
     Args:
         ds: input dataset,
@@ -606,7 +618,6 @@ def whitsvc(
     Returns:
         ds_out: xarray.Dataset with smoothed data and sgrid
     """
-
     if lc is not None:
         if p is None:
             raise ValueError("If lc is set, a p value needs to be specified as well.")
@@ -663,8 +674,7 @@ def whitsvc(
 def whitint(
     ds: xarray.Dataset, dim: str, labels_daily: numpy.ndarray, template: numpy.ndarray
 ):
-    """Wrapper for temporal interpolation using the Whittaker filter"""
-
+    """Perform temporal interpolation using the Whittaker filter."""
     template_out = numpy.zeros(numpy.unique(labels_daily).size, dtype="u1")
 
     ds_out = xarray.apply_ufunc(
@@ -684,9 +694,11 @@ def whitint(
     return ds_out
 
 
-@jit(nopython=True)
+@njit
 def autocorr(x):
-    """Calculates Lag-1 autocorrelation.
+    """
+    Calculate Lag-1 autocorrelation.
+
     Adapted from https://stackoverflow.com/a/29194624/5997555
     Args:
         x: 3d data array
@@ -735,7 +747,8 @@ def autocorr(x):
 
 
 def lag1corr(ds: xarray.Dataset, dim: str):
-    """xarray wrapper for autocorr
+    """
+    Xarray wrapper for autocorr.
 
     Args:
         ds: input dataset,
@@ -744,7 +757,6 @@ def lag1corr(ds: xarray.Dataset, dim: str):
     Returns:
         xarray.DataArray with lag1 autocorrelation
     """
-
     return xarray.apply_ufunc(
         autocorr,
         ds[dim],
@@ -760,7 +772,8 @@ def lag1corr(ds: xarray.Dataset, dim: str):
     nopython=True,
 )
 def tinterpolate(x, template, labels, template_out, out):  # pylint: disable=W0613
-    """Temporal interpolation of smoothed data
+    """
+    Temporal interpolation of smoothed data.
 
     Args:
         x: smoothed data
@@ -768,7 +781,6 @@ def tinterpolate(x, template, labels, template_out, out):  # pylint: disable=W06
         labels: array of labels for grouping of length equal to template
         template_out: helper array to determine the length of output array
     """
-
     temp = template.copy()
     w = template.copy()
     ii = 0

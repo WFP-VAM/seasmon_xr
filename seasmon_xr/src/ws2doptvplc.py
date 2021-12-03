@@ -1,3 +1,8 @@
+"""
+Whittaker filter V-curve optimization of S, asymmetric weights and srange from autocorrelation.
+
+numba implementations.
+"""
 # pyright: reportGeneralTypeIssues=false
 from math import log, sqrt
 
@@ -20,15 +25,15 @@ from .ws2doptvp import _ws2doptvp
     )
 )
 def ws2doptvplc(y, nodata, p, lc, out, lopt):
-    """Whittaker filter V-curve optimization of S, asymmetric weights and
-    srange determined by autocorrelation
+    """
+    Whittaker filter V-curve optimization of S, asymmetric weights and srange from autocorrelation.
 
     Args:
         y (numpy.array): raw data array (1d, expected in float64)
         nodata (double, int): nodata value
         p (float): Envelope value for asymmetric weights
-        lc (float): lag1 autocorrelation"""
-
+        lc (float): lag1 autocorrelation
+    """
     m = y.shape[0]
     w = numpy.zeros(y.shape, dtype=float64)
 
@@ -164,8 +169,8 @@ def ws2doptvplc(y, nodata, p, lc, out, lopt):
 
 @lazycompile(numba.jit(nopython=True, parallel=True, nogil=True))
 def ws2doptvplc_tyx(tyx, p, nodata):
-    """Whittaker filter V-curve optimization of S, asymmetric weights and
-    srange determined by autocorrelation
+    """
+    Whittaker filter V-curve optimization of S, asymmetric weights and srange from autocorrelation.
 
     Args:
         tyx (numpy.array): raw data array (int16 usually, T,Y,X axis order)
@@ -176,7 +181,6 @@ def ws2doptvplc_tyx(tyx, p, nodata):
        zz  smoothed version of the input data (zz.shape == tyx.shape)
        lopts optimization parameters (lopts.shape == zz.shape[1:])
     """
-
     nt, nr, nc = tyx.shape
     zz = numpy.zeros((nt, nr, nc), dtype=tyx.dtype)
     lopts = numpy.zeros((nr, nc), dtype="float64")

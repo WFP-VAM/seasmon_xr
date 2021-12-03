@@ -1,19 +1,20 @@
-"""Whittaker filter with differences of 2nd order for a 1d array"""
-from numba import jit
+"""Whittaker filter with differences of 2nd order for a 1d array."""
+from numba import njit
 from numpy import zeros
 
 
-@jit(nopython=True)
+@njit
 def ws2d(y, lmda, w):
-    """Whittaker filter with differences of 2nd order
+    """
+    Whittaker filter with differences of 2nd order.
 
     Args:
         y (numpy.array): raw data array (1d, expected in float64)
         lmda (double): S value
         w (numpy.array): weights vector (1d, expected in float64)
     Returns:
-        z (numpy.array): smoothed data array (1d)"""
-
+        z (numpy.array): smoothed data array (1d)
+    """
     n = y.shape[0]
     m = n - 1
     z = zeros(n)

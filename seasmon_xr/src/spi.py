@@ -1,7 +1,8 @@
-"""Tooling to calculate Standardized Precipitation Index (SPI)"""
+"""Tooling to calculate Standardized Precipitation Index (SPI)."""
 from math import log, sqrt
 
 import numba
+import numba.core.types as nt
 import numba_scipy  # pylint: disable=unused-import
 import numpy as np
 import scipy.special as sc
@@ -9,16 +10,15 @@ import scipy.special as sc
 
 @numba.njit
 def brentq(xa, xb, s):
-    """Root finding optimization using Brent's method
+    """
+    Root finding optimization using Brent's method.
 
     adapted from:
 
     https://github.com/scipy/scipy/blob/f2ef65dc7f00672496d7de6154744fee55ef95e9/scipy/optimize/Zeros/brentq.c#L37
     Copyright (c) 2001-2002 Enthought, Inc.  2003-2019, SciPy Developers.
     All rights reserved.
-
     """
-
     xpre = xa
     xcur = xb
     xblk = 0.0
@@ -107,14 +107,14 @@ def brentq(xa, xb, s):
 
 @numba.njit
 def gammafit(x):
-    """Calculate gamma distribution parameters for timeseries
+    """
+    Calculate gamma distribution parameters for timeseries.
 
     Adapted from:
     https://github.com/scipy/scipy/blob/f2ef65dc7f00672496d7de6154744fee55ef95e9/scipy/stats/_continuous_distns.py#L2554
     Copyright (c) 2001-2002 Enthought, Inc.  2003-2019, SciPy Developers.
     All rights reserved.
     """
-
     n = 0
     xts = 0
     logs = 0
@@ -148,7 +148,7 @@ def gammafit(x):
 
 @numba.njit
 def spifun(x, a=None, b=None, cal_start=None, cal_stop=None):
-    """Calculate SPI with gamma distribution for 3d array"""
+    """Calculate SPI with gamma distribution for 3d array."""
     y = np.full_like(x, -9999)
     r, c, t = x.shape
 
@@ -187,7 +187,7 @@ def spifun(x, a=None, b=None, cal_start=None, cal_stop=None):
                 y[ri, ci, :] = -9999
                 continue
 
-            spi = np.full(t, p_zero, dtype=numba.float64)
+            spi = np.full(t, p_zero, dtype=nt.float64)  # type: ignore
 
             for tix in valid_ix:
                 spi[tix] = p_zero + (
