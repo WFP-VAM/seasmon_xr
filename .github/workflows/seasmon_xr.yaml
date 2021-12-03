@@ -41,5 +41,9 @@ jobs:
         run: |
           pylint seasmon_xr
 
+      - name: check with pydocstyle
+        run: |
+          pydocstyle seasmon_xr
+
       - name: run pytest
         run: python -m pytest -s
