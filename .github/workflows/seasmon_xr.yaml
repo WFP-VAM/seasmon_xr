@@ -33,5 +33,13 @@ jobs:
               -r requirements_dev.txt
           pip freeze
 
+      - name: check formatting
+        run: |
+          black --check .
+
+      - name: check with pylint
+        run: |
+          pylint seasmon_xr
+
       - name: run pytest
         run: python -m pytest -s

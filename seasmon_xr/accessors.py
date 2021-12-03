@@ -119,7 +119,7 @@ class IterativeAggregation(AccessorBase):
     def _iteragg(self, func, n, dim, begin, end, method):
 
         if dim not in self._obj.dims:
-            raise ValueError("Dimension %s doesn't exist in xarray object!" % dim)
+            raise ValueError(f"Dimension {dim} doesn't exist in xarray object!")
 
         _index = self._obj[dim].to_index()
 
