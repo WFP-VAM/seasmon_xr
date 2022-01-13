@@ -374,6 +374,8 @@ class PixelAlgorithms:
         calibration_stop=None,
     ):
         """Calculate the SPI along the time dimension."""
+        from .ops.spi import spifun  # pylint: disable=import-outside-toplevel
+
         tix = self._obj.get_index("time")
 
         calstart_ix = 0
@@ -403,7 +405,7 @@ class PixelAlgorithms:
             )
 
         res = xarray.apply_ufunc(
-            ops.spifun,
+            spifun,
             self._obj,
             kwargs={
                 "cal_start": calstart_ix,

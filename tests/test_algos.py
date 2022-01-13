@@ -9,14 +9,13 @@ from seasmon_xr.ops import (
     autocorr_1d,
     autocorr_tyx,
     lroo,
-    spifun,
     ws2dgu,
     ws2doptv,
     ws2doptvp,
     ws2doptvplc,
     ws2dpgu,
 )
-from seasmon_xr.ops.spi import brentq, gammafit
+from seasmon_xr.ops.spi import brentq, gammafit, spifun
 
 
 @pytest.fixture

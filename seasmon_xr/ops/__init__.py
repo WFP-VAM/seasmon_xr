@@ -1,7 +1,6 @@
 """Numba implementations."""
 from .autocorr import autocorr, autocorr_1d, autocorr_tyx
 from .lroo import lroo
-from .spi import spifun
 from .tinterpolate import tinterpolate
 from .ws2dgu import ws2dgu
 from .ws2doptv import ws2doptv
@@ -14,7 +13,6 @@ __all__ = (
     "autocorr_tyx",
     "autocorr_1d",
     "lroo",
-    "spifun",
     "tinterpolate",
     "ws2dgu",
     "ws2doptv",
