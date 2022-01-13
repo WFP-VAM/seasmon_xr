@@ -17,6 +17,8 @@ from seasmon_xr.src import (
 )
 from seasmon_xr.src.spi import brentq, gammafit
 
+# pyright: reportGeneralTypeIssues=false
+
 
 @pytest.fixture
 def ts():

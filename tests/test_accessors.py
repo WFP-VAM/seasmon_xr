@@ -8,6 +8,8 @@ import xarray as xr
 import seasmon_xr
 from seasmon_xr.src.ws2d import ws2d
 
+# pyright: reportGeneralTypeIssues=false
+
 
 @pytest.fixture
 def darr():
@@ -236,16 +238,17 @@ def test_agg_sum_1_lim_end(darr):
     n = 0
     end = "2000-01-21"
     ii = -1
+    _last_x = None
     for _x in darr.iteragg.sum(1, end=end):
         np.testing.assert_array_equal(_x.squeeze(), darr[ii, :])
         assert _x.attrs["agg_n"] == 1
         assert _x.time == darr.time[ii]
         ii -= 1
         n += 1
+        _last_x = _x
     assert n == 3
-    assert (
-        _x.time.dt.strftime("%Y-%m-%d").values == end
-    )  # pylint: disable=undefined-loop-variable
+    assert _last_x is not None
+    assert _last_x.time.dt.strftime("%Y-%m-%d").values == end
 
 
 def test_agg_sum_1_lim_begin_end(darr):
@@ -253,16 +256,18 @@ def test_agg_sum_1_lim_begin_end(darr):
     begin = "2000-01-31"
     end = "2000-01-11"
     ii = darr.time.to_index().get_loc(begin)
+    _last_x = None
     for _x in darr.iteragg.sum(1, begin=begin, end=end):
         np.testing.assert_array_equal(_x.squeeze(), darr[ii, :])
         assert _x.attrs["agg_n"] == 1
         assert _x.time == darr.time[ii]
         ii -= 1
         n += 1
+        _last_x = _x
+
     assert n == 3
-    assert (
-        _x.time.dt.strftime("%Y-%m-%d").values == end
-    )  # pylint: disable=undefined-loop-variable
+    assert _last_x is not None
+    assert _last_x.time.dt.strftime("%Y-%m-%d").values == end
 
 
 def test_agg_sum_3(darr):
@@ -309,16 +314,17 @@ def test_agg_mean_1_lim_end(darr):
     n = 0
     end = "2000-01-21"
     ii = -1
+    _last_x = None
     for _x in darr.iteragg.mean(1, end=end):
         np.testing.assert_array_equal(_x.squeeze(), darr[ii, :])
         assert _x.attrs["agg_n"] == 1
         assert _x.time == darr.time[ii]
         ii -= 1
         n += 1
+        _last_x = _x
     assert n == 3
-    assert (
-        _x.time.dt.strftime("%Y-%m-%d").values == end
-    )  # pylint: disable=undefined-loop-variable
+    assert _last_x is not None
+    assert _last_x.time.dt.strftime("%Y-%m-%d").values == end
 
 
 def test_agg_mean_1_lim_begin_end(darr):
@@ -326,16 +332,17 @@ def test_agg_mean_1_lim_begin_end(darr):
     begin = "2000-01-31"
     end = "2000-01-11"
     ii = darr.time.to_index().get_loc(begin)
+    _last_x = None
     for _x in darr.iteragg.mean(1, begin=begin, end=end):
         np.testing.assert_array_equal(_x.squeeze(), darr[ii, :])
         assert _x.attrs["agg_n"] == 1
         assert _x.time == darr.time[ii]
         ii -= 1
         n += 1
+        _last_x = _x
     assert n == 3
-    assert (
-        _x.time.dt.strftime("%Y-%m-%d").values == end
-    )  # pylint: disable=undefined-loop-variable
+    assert _last_x is not None
+    assert _last_x.time.dt.strftime("%Y-%m-%d").values == end
 
 
 def test_agg_mean_3(darr):
