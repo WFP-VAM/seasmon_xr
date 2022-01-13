@@ -1,9 +1,10 @@
 """Tests for pixel alogrithms"""
-# pylint: disable=no-name-in-module,redefined-outer-name
+# pylint: disable=no-name-in-module,redefined-outer-name,no-value-for-parameter
+# pyright: reportGeneralTypeIssues=false
 import numpy as np
 import pytest
 
-from seasmon_xr.src import (
+from seasmon_xr.ops import (
     autocorr,
     autocorr_1d,
     autocorr_tyx,
@@ -15,9 +16,7 @@ from seasmon_xr.src import (
     ws2doptvplc,
     ws2dpgu,
 )
-from seasmon_xr.src.spi import brentq, gammafit
-
-# pyright: reportGeneralTypeIssues=false
+from seasmon_xr.ops.spi import brentq, gammafit
 
 
 @pytest.fixture

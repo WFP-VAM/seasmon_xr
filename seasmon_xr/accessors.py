@@ -7,7 +7,7 @@ import pandas as pd
 import xarray
 from dask import is_dask_collection
 
-import seasmon_xr.src
+from . import ops
 
 __all__ = [
     "Anomalies",
@@ -228,7 +228,7 @@ class WhittakerSmoother:
         if p is not None:
 
             xout = xarray.apply_ufunc(
-                seasmon_xr.src.ws2dpgu,
+                ops.ws2dpgu,
                 self._obj,
                 lmda,
                 nodata,
@@ -242,7 +242,7 @@ class WhittakerSmoother:
         else:
 
             xout = xarray.apply_ufunc(
-                seasmon_xr.src.ws2dgu,
+                ops.ws2dgu,
                 self._obj,
                 lmda,
                 nodata,
@@ -281,7 +281,7 @@ class WhittakerSmoother:
                 )
 
             ds_out, sgrid = xarray.apply_ufunc(
-                seasmon_xr.src.ws2doptvplc,
+                ops.ws2doptvplc,
                 self._obj,
                 nodata,
                 p,
@@ -299,7 +299,7 @@ class WhittakerSmoother:
 
             if p:
                 ds_out, sgrid = xarray.apply_ufunc(
-                    seasmon_xr.src.ws2doptvp,
+                    ops.ws2doptvp,
                     self._obj,
                     nodata,
                     p,
@@ -313,7 +313,7 @@ class WhittakerSmoother:
             else:
 
                 ds_out, sgrid = xarray.apply_ufunc(
-                    seasmon_xr.src.ws2doptv,
+                    ops.ws2doptv,
                     self._obj,
                     nodata,
                     srange,
@@ -338,7 +338,7 @@ class WhittakerSmoother:
         template_out = np.zeros(np.unique(labels_daily).size, dtype="u1")
 
         ds_out = xarray.apply_ufunc(
-            seasmon_xr.src.tinterpolate,
+            ops.tinterpolate,
             self._obj,
             template,
             labels_daily,
@@ -403,7 +403,7 @@ class PixelAlgorithms:
             )
 
         res = xarray.apply_ufunc(
-            seasmon_xr.src.spifun,
+            ops.spifun,
             self._obj,
             kwargs={
                 "cal_start": calstart_ix,
@@ -436,7 +436,7 @@ class PixelAlgorithms:
     def lroo(self):
         """Longest run of ones along time dimension."""
         return xarray.apply_ufunc(
-            seasmon_xr.src.lroo,
+            ops.lroo,
             self._obj,
             input_core_dims=[["time"]],
             dask="parallelized",
@@ -461,16 +461,16 @@ class PixelAlgorithms:
                     xx = xx.chunk({"time": -1})
 
                 data = da.map_blocks(
-                    seasmon_xr.src.autocorr_tyx, xx.data, dtype="float32", drop_axis=0
+                    ops.autocorr_tyx, xx.data, dtype="float32", drop_axis=0
                 )
             else:
-                data = seasmon_xr.src.autocorr_tyx(xx.data)
+                data = ops.autocorr_tyx(xx.data)
 
             coords = {k: c for k, c in xx.coords.items() if k != "time"}
             return xarray.DataArray(data=data, dims=xx.dims[1:], coords=coords)
 
         return xarray.apply_ufunc(
-            seasmon_xr.src.autocorr,
+            ops.autocorr,
             xx,
             input_core_dims=[["time"]],
             dask="parallelized",

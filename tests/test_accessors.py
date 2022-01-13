@@ -1,14 +1,14 @@
 """Tests for xarray accessors"""
 # pylint: disable=redefined-outer-name,unused-import,no-member,no-name-in-module,missing-function-docstring
+# pyright: reportGeneralTypeIssues=false
+
 import numpy as np
 import pandas as pd
 import pytest
 import xarray as xr
 
-import seasmon_xr
-from seasmon_xr.src.ws2d import ws2d
-
-# pyright: reportGeneralTypeIssues=false
+from seasmon_xr import ops
+from seasmon_xr.ops.ws2d import ws2d
 
 
 @pytest.fixture
@@ -388,7 +388,7 @@ def test_whit_whits_s(darr):
 
     y = darr[:, 0, 0].astype("float64").data
     w = ((y != 0) * 1).astype("float64")
-    z = np.rint(seasmon_xr.src.ws2d.ws2d(y, 10.0, w))
+    z = np.rint(ws2d(y, 10.0, w))
 
     np.testing.assert_array_equal(_darr[0, 0, :].data, z)
 
@@ -408,7 +408,7 @@ def test_whit_whits_sg(darr):
     y = darr[:, 0, 0].astype("float64").data
     w = ((y != 0) * 1).astype("float64")
     l = 10 ** -0.5
-    z = np.rint(seasmon_xr.src.ws2d.ws2d(y, l, w))
+    z = np.rint(ws2d(y, l, w))
 
     np.testing.assert_array_equal(_darr[0, 0, :].data, z)
 
@@ -434,7 +434,7 @@ def test_whit_whits_sg_p(darr):
 
     y = darr[:, 0, 0].astype("float64").data
     l = 10 ** -0.5
-    z = np.rint(seasmon_xr.src.ws2dpgu(y, l, 0, 0.90))
+    z = np.rint(ops.ws2dpgu(y, l, 0, 0.90))
 
     np.testing.assert_array_equal(_darr[0, 0, :].data, z)
 
@@ -465,7 +465,7 @@ def test_whit_whitsvc(darr):
 
     y = darr[:, 0, 0].astype("float64").data
 
-    z, l = seasmon_xr.src.ws2doptv(y, 0.0, srange)
+    z, l = ops.ws2doptv(y, 0.0, srange)
 
     np.testing.assert_array_equal(_darr.band[0, 0, :].data, np.rint(z))
     assert np.log10(l) == -0.5
@@ -492,7 +492,7 @@ def test_whit_whitsvc_unnamed(darr):
 
     y = darr[:, 0, 0].astype("float64").data
 
-    z, l = seasmon_xr.src.ws2doptv(y, 0.0, srange)
+    z, l = ops.ws2doptv(y, 0.0, srange)
 
     np.testing.assert_array_equal(_darr.band[0, 0, :].data, np.rint(z))
     assert np.log10(l) == -0.5
@@ -517,7 +517,7 @@ def test_whit_whitsvcp(darr):
 
     y = darr[:, 0, 0].astype("float64").data
 
-    z, l = seasmon_xr.src.ws2doptvp(y, 0.0, 0.90, srange)
+    z, l = ops.ws2doptvp(y, 0.0, 0.90, srange)
 
     np.testing.assert_array_equal(_darr.band[0, 0, :].data, np.rint(z))
     assert np.log10(l) == -1.5
@@ -544,7 +544,7 @@ def test_whit_whitsvcp_unnamed(darr):
 
     y = darr[:, 0, 0].astype("float64").data
 
-    z, l = seasmon_xr.src.ws2doptvp(y, 0.0, 0.90, srange)
+    z, l = ops.ws2doptvp(y, 0.0, 0.90, srange)
 
     np.testing.assert_array_equal(_darr.band[0, 0, :].data, np.rint(z))
     assert np.log10(l) == -1.5
