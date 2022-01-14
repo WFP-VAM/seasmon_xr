@@ -45,5 +45,9 @@ jobs:
         run: |
           pydocstyle seasmon_xr
 
+      - name: check with mypy
+        run: |
+          mypy seasmon_xr
+
       - name: run pytest
         run: python -m pytest -s

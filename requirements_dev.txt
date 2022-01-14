@@ -1,5 +1,5 @@
-#wheel
-#flake8
+wheel
+twine
 pytest
 pytest-runner
 pytest-cov
@@ -7,3 +7,5 @@ black
 pylint
 pydocstyle
 isort
+mypy
+packaging
