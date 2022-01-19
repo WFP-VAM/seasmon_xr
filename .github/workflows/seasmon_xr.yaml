@@ -52,7 +52,7 @@ jobs:
       - name: run pytest
         run: python -m pytest -s
 
-      - name: build wheels
+      - name: build wheels unpatched
         if: matrix.python-version == 3.8
         run: |
           mkdir wheels
@@ -63,7 +63,22 @@ jobs:
             --exists-action w \
             --wheel-dir wheels \
           .
-          ls -lh wheels/
+
+      - name: patch version
+        if: matrix.python-version == 3.8
+        run: |
+          python ./scripts/patch_version.py ${GITHUB_RUN_NUMBER:-0} ./seasmon_xr/_version.py
+
+      - name: build wheels patched version
+        if: matrix.python-version == 3.8
+        run: |
+          pip wheel \
+            --verbose \
+            --no-input \
+            --no-deps \
+            --exists-action w \
+            --wheel-dir wheels \
+          .
 
       - name: Upload results (artifact)
         if: matrix.python-version == 3.8
