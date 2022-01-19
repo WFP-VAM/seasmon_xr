@@ -51,3 +51,24 @@ jobs:
 
       - name: run pytest
         run: python -m pytest -s
+
+      - name: build wheels
+        if: matrix.python-version == 3.8
+        run: |
+          mkdir wheels
+          pip wheel \
+            --verbose \
+            --no-input \
+            --no-deps \
+            --exists-action w \
+            --wheel-dir wheels \
+          .
+          ls -lh wheels/
+
+      - name: Upload results (artifact)
+        if: matrix.python-version == 3.8
+        uses: actions/upload-artifact@v2
+        with:
+          name: wheels
+          path: wheels
+          if-no-files-found: error
