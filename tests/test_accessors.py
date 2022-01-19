@@ -463,6 +463,32 @@ def test_whit_whitsvc(darr):
     np.testing.assert_array_equal(_darr.band[0, 0, :].data, np.rint(z))
     assert np.log10(l) == -0.5
 
+def test_whit_whitsvc_unnamed(darr):
+    srange = np.arange(-2, 2)
+    _res = np.array(
+        [
+            [[55, 59, 55, 38, 72], [82, 49, 50, 34, 27]],
+            [[26, 71, 81, 61, 39], [80, 69, 33, 8, -3]],
+        ],
+        dtype="int16",
+    )
+
+    darr.name = None
+    _darr = darr.whit.whitsvc(nodata=0, srange=srange)
+    assert isinstance(_darr, xr.Dataset)
+    assert "band" in _darr
+    assert "sgrid" in _darr
+
+    np.testing.assert_array_equal(_darr.band, _res)
+    np.testing.assert_array_equal(_darr.sgrid, np.full((2, 2), -0.5))
+
+    y = darr[:, 0, 0].astype("float64").data
+
+    z, l = seasmon_xr.src.ws2doptv(y, 0.0, srange)
+
+    np.testing.assert_array_equal(_darr.band[0, 0, :].data, np.rint(z))
+    assert np.log10(l) == -0.5
+
 
 def test_whit_whitsvcp(darr):
     srange = np.arange(-2, 2)
@@ -473,6 +499,33 @@ def test_whit_whitsvcp(darr):
         ],
         dtype="int16",
     )
+    _darr = darr.whit.whitsvc(nodata=0, srange=srange, p=0.90)
+    assert isinstance(_darr, xr.Dataset)
+    assert "band" in _darr
+    assert "sgrid" in _darr
+
+    np.testing.assert_array_equal(_darr.band, _res)
+    np.testing.assert_array_equal(_darr.sgrid, np.array([[-1.5, -1.5], [-0.5, -1.5]]))
+
+    y = darr[:, 0, 0].astype("float64").data
+
+    z, l = seasmon_xr.src.ws2doptvp(y, 0.0, 0.90, srange)
+
+    np.testing.assert_array_equal(_darr.band[0, 0, :].data, np.rint(z))
+    assert np.log10(l) == -1.5
+
+
+def test_whit_whitsvcp_unnamed(darr):
+    srange = np.arange(-2, 2)
+    _res = np.array(
+        [
+            [[54, 66, 71, 49, 86], [92, 60, 70, 43, 30]],
+            [[60, 79, 83, 72, 55], [85, 84, 40, 10, 1]],
+        ],
+        dtype="int16",
+    )
+
+    darr.name = None
     _darr = darr.whit.whitsvc(nodata=0, srange=srange, p=0.90)
     assert isinstance(_darr, xr.Dataset)
     assert "band" in _darr
