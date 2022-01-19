@@ -323,7 +323,7 @@ class WhittakerSmoother:
                     keep_attrs=True,
                 )
 
-        ds_out = ds_out.to_dataset()
+        ds_out = ds_out.to_dataset(name=(ds_out.name or "band"))
         ds_out["sgrid"] = np.log10(sgrid).astype("float32")
 
         return ds_out
