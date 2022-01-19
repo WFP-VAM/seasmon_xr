@@ -1,0 +1,66 @@
+# Creates and caches python environment for testing
+#  input  : python-version  (example: "3.8", passed on to actions/setup-python)
+#  outputs:
+#    cache-key   should be passed to actions/cache::key
+#    cache-path  should be passed to actions/cache::path
+#
+# Can't use in private repo:
+#  https://github.community/t/reusable-workflows-in-private-organization-repositories/215009
+name: prepare python environment
+
+on:
+  workflow_call:
+    inputs:
+      python-version:
+        required: true
+        type: string
+      script:
+        required: true
+        type: string
+    outputs:
+      cache-key:
+        description: "Cache key"
+        value: ${{ jobs.setup_py.outputs.cache-key }}
+      cache-path:
+        description: "Path of the cached python environment"
+        value: ${{ jobs.setup_py.outputs.cache-path }}
+
+jobs:
+  setup_py:
+    runs-on: ubuntu-20.04
+    outputs:
+      cache-key: ${{ steps.cfg.outputs.cache-key }}
+      cache-path: ${{ steps.cfg.outputs.cache-path }}
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ inputs.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ inputs.python-version }}
+
+      - name: cfg
+        id: cfg
+        run: |
+          cache_path="${{ env.pythonLocation }}"
+          cache_key="${cache_path}-${{ hashFiles('requirements.txt', 'requirements_dev.txt') }}"
+          echo "::set-output name=cache-key::${cache_key}"
+          echo "::set-output name=cache-path::${cache_path}"
+
+      - name: cache deps
+        uses: actions/cache@v2
+        id: py_cache
+        with:
+          path: ${{ steps.cfg.outputs.cache-path }}
+          key: ${{ steps.cfg.output.cache-key }}
+          restore-keys: |
+            ${{ steps.cfg.outputs.cache-path }}-
+
+      - name: install dependencies
+        if: steps.py_cache.outputs.cache-hit != 'true'
+        run: |
+          pip install \
+              --upgrade --upgrade-strategy eager \
+              -r requirements.txt \
+              -r requirements_dev.txt
+          pip freeze
