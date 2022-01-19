@@ -463,6 +463,7 @@ def test_whit_whitsvc(darr):
     np.testing.assert_array_equal(_darr.band[0, 0, :].data, np.rint(z))
     assert np.log10(l) == -0.5
 
+
 def test_whit_whitsvc_unnamed(darr):
     srange = np.arange(-2, 2)
     _res = np.array(
