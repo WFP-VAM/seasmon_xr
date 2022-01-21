@@ -87,7 +87,6 @@ jobs:
           python ./scripts/patch_version.py ${GITHUB_RUN_NUMBER:-0} ./seasmon_xr/_version.py
 
       - name: build wheels patched version
-        if: matrix.python-version == 3.8
         run: |
           pip wheel \
             --verbose \
