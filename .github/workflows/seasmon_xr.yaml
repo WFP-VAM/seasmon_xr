@@ -5,7 +5,7 @@ on:
 
 jobs:
   env38:
-    uses: WFP-VAM/seasmon_xr/.github/workflows/pyenv.yaml@actions-refactor
+    uses: WFP-VAM/seasmon_xr/.github/workflows/pyenv.yaml@main
     with:
       python-version: "3.8"
       run: |
@@ -16,28 +16,28 @@ jobs:
 
   black:
     needs: [env38]
-    uses: WFP-VAM/seasmon_xr/.github/workflows/pyenv.yaml@actions-refactor
+    uses: WFP-VAM/seasmon_xr/.github/workflows/pyenv.yaml@main
     with:
       python-version: "3.8"
       run: black --check .
 
   pylint:
     needs: [env38]
-    uses: WFP-VAM/seasmon_xr/.github/workflows/pyenv.yaml@actions-refactor
+    uses: WFP-VAM/seasmon_xr/.github/workflows/pyenv.yaml@main
     with:
       python-version: "3.8"
       run: pylint seasmon_xr
 
   pydocstyle:
     needs: [env38]
-    uses: WFP-VAM/seasmon_xr/.github/workflows/pyenv.yaml@actions-refactor
+    uses: WFP-VAM/seasmon_xr/.github/workflows/pyenv.yaml@main
     with:
       python-version: "3.8"
       run: pydocstyle seasmon_xr
 
   mypy:
     needs: [env38]
-    uses: WFP-VAM/seasmon_xr/.github/workflows/pyenv.yaml@actions-refactor
+    uses: WFP-VAM/seasmon_xr/.github/workflows/pyenv.yaml@main
     with:
       python-version: "3.8"
       run: mypy seasmon_xr
@@ -80,6 +80,8 @@ jobs:
             --wheel-dir wheels \
           .
 
+          python setup.py sdist -d wheels
+
       - name: patch version
         run: |
           python ./scripts/patch_version.py ${GITHUB_RUN_NUMBER:-0} ./seasmon_xr/_version.py
@@ -94,6 +96,8 @@ jobs:
             --exists-action w \
             --wheel-dir wheels \
           .
+
+          python setup.py sdist -d wheels
 
       - name: Upload results (artifact)
         uses: actions/upload-artifact@v2
