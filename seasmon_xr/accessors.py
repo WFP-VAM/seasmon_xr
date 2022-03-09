@@ -569,6 +569,7 @@ class PixelAlgorithms:
             output_dtypes=["float32"],
         )
 
+
 @xarray.register_dataset_accessor("zonal")
 @xarray.register_dataarray_accessor("zonal")
 class ZonalStatistics(AccessorBase):
@@ -647,6 +648,8 @@ class ZonalStatistics(AccessorBase):
 @xarray.register_dataset_accessor("hdc")
 @xarray.register_dataarray_accessor("hdc")
 class HDC:
+    """xarray accessor for HDC xarray tools."""
+
     def __init__(self, xarray_obj):
         self.algo = PixelAlgorithms(xarray_obj)
         self.anom = Anomalies(xarray_obj)
