@@ -602,6 +602,9 @@ class ZonalStatistics(AccessorBase):
 
         xx = self._obj
 
+        if isinstance(xx, xarray.Dataset):
+            raise NotImplementedError("zonal needs dataarray as input")
+
         if "nodata" not in xx.attrs:
             raise ValueError("Input xarray DataArray needs nodata attribute")
 
