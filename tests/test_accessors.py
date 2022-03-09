@@ -829,3 +829,6 @@ def test_zonal_type_exc(darr, zones):
     z_ids = np.unique(zones.data)
     with pytest.raises(ValueError):
         _ = darr.zonal.mean(zones.data, z_ids)
+
+## compat tests
+
