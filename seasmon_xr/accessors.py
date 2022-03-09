@@ -569,7 +569,7 @@ class PixelAlgorithms:
             output_dtypes=["float32"],
         )
 
-
+@xarray.register_dataset_accessor("zonal")
 @xarray.register_dataarray_accessor("zonal")
 class ZonalStatistics(AccessorBase):
     """Class to claculate zonal statistics."""
@@ -642,3 +642,14 @@ class ZonalStatistics(AccessorBase):
         return xarray.DataArray(
             data=data, dims=dims, coords=coords, attrs={}, name=name
         )
+
+
+@xarray.register_dataset_accessor("hdc")
+@xarray.register_dataarray_accessor("hdc")
+class HDC:
+    def __init__(self, xarray_obj):
+        self.algo = PixelAlgorithms(xarray_obj)
+        self.anom = Anomalies(xarray_obj)
+        self.iteragg = IterativeAggregation(xarray_obj)
+        self.whit = WhittakerSmoother(xarray_obj)
+        self.zonal = ZonalStatistics(xarray_obj)
