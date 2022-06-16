@@ -2,5 +2,5 @@ numpy
 xarray
 numba
 dask[array]
-scipy==1.6.2
+scipy
 numba-scipy>=0.3.0
