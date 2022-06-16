@@ -47,4 +47,5 @@ disable = [
   "duplicate-code",
   "fixme",
   "wrong-import-order",
+  "unnecessary-lambda-assignment",
 ]
