@@ -3,4 +3,4 @@ xarray
 numba
 dask[array]
 scipy
-numba-scipy>=0.3.0
+numba-scipy>=0.4.0.dev0
