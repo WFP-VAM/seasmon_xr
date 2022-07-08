@@ -1,6 +1,6 @@
 """Lag-1 autocorrelations."""
 from numba import njit
-from numba.core.types import float64, int64
+from numba.core.types import float32, float64, int64
 from numpy import isnan, zeros
 
 from ._helper import lazycompile
@@ -215,7 +215,7 @@ def autocorr_tyx(tyx, nodata=None):
         Lag-1 autocorrelation array Y,X order
     """
     _, nr, nc = tyx.shape
-    z = zeros((nr, nc), dtype="float32")
+    z = zeros((nr, nc), dtype=float32)
 
     for rr in range(nr):
         for cc in range(nc):
