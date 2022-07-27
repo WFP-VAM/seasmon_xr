@@ -491,6 +491,7 @@ class PixelAlgorithms(AccessorBase):
             xarray.DataArray with lag1 autocorrelation
         """
         xx = self._obj
+        nodata = xx.attrs.get("nodata", None)
         if xx.dims[0] == "time":
             # I don't know how to tell xarray's map_blocks about
             # changing dtype and losing first dimension, so use
@@ -501,10 +502,10 @@ class PixelAlgorithms(AccessorBase):
                     xx = xx.chunk({"time": -1})
 
                 data = da.map_blocks(
-                    ops.autocorr_tyx, xx.data, dtype="float32", drop_axis=0
+                    ops.autocorr_tyx, xx.data, nodata, dtype="float32", drop_axis=0
                 )
             else:
-                data = ops.autocorr_tyx(xx.data)
+                data = ops.autocorr_tyx(xx.data, nodata)
 
             coords = {k: c for k, c in xx.coords.items() if k != "time"}
             return xarray.DataArray(data=data, dims=xx.dims[1:], coords=coords)
@@ -512,6 +513,7 @@ class PixelAlgorithms(AccessorBase):
         return xarray.apply_ufunc(
             ops.autocorr,
             xx,
+            nodata,
             input_core_dims=[["time"]],
             dask="parallelized",
             output_dtypes=["float32"],
