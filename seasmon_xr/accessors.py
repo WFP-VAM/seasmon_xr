@@ -255,7 +255,7 @@ class WhittakerSmoother(AccessorBase):
         if sg is None and s is None:
             raise ValueError("Need S or sgrid")
 
-        lmda = 10**sg if sg is not None else s
+        lmda = 10 ** sg if sg is not None else s
 
         if p is not None:
 
